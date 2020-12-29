@@ -54,16 +54,18 @@ class ProtobufGenerator(
       .add(s"implicit def enumCompanion: _root_.scalapb.GeneratedEnumCompanion[$name] = this")
       .print(e.getValues.asScala) { case (p, v) =>
         p.call(generateScalaDoc(v))
-          .add(s"""@SerialVersionUID(0L)${if (v.getOptions.getDeprecated) {
-            " " + ProtobufGenerator.deprecatedAnnotation
-          } else ""}
-                  |case object ${v.scalaName.asSymbol} extends ${v.valueExtends
+          .add("@SerialVersionUID(0L)")
+          .when(v.getOptions.getDeprecated) {
+            _.add(ProtobufGenerator.deprecatedAnnotation)
+          }
+          .add(
+            s"""case object ${v.scalaName.asSymbol} extends ${v.valueExtends
             .mkString(" with ")} {
-                  |  val index = ${v.getIndex}
-                  |  val name = "${v.getName}"
-                  |  override def ${v.isName}: _root_.scala.Boolean = true
-                  |}
-                  |""".stripMargin)
+              |  val index = ${v.getIndex}
+              |  val name = "${v.getName}"
+              |  override def ${v.isName}: _root_.scala.Boolean = true
+              |}
+              |""".stripMargin)
       }
       .add(s"""@SerialVersionUID(0L)
               |final case class Unrecognized(unrecognizedValue: _root_.scala.Int) extends $name(unrecognizedValue) with _root_.scalapb.UnrecognizedEnum
