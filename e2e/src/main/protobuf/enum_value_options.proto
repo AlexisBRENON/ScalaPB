@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package com.thesamet.proto.e2e;
+
+import "google/protobuf/descriptor.proto";
+extend google.protobuf.EnumValueOptions {
+  bool boolOption = 50001;
+}
+
+enum EnumValueOptions {
+  UNSET = 0 [(boolOption) = false];
+  BOOL_TRUE = 1 [(boolOption) = true];
+}
